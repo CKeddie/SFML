@@ -3,7 +3,9 @@
 #include "SpriteRenderer.h"
 
 Entity::Entity()
+	//: IEntityData(*this)
 {
+
 }
 
 Entity::Entity(sf::Vector2f position, sf::Vector2f scale, float rotation)
@@ -46,3 +48,9 @@ void Entity::AddComponent(Component * component)
 {
 	_components[&typeid(*component)] = component;
 }
+
+//IEntityData::IEntityData(Entity & entity)
+//	: _entity(entity)
+//{
+//
+//}

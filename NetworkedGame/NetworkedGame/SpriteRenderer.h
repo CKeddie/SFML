@@ -21,7 +21,7 @@ public:
 	void SetDirection(int dir);
 	void SetDirection(Direction dir);
 private:
-	Direction _direction;
+	Direction _direction = Right;
 	sf::Vector2f * _size;
 	sf::Sprite* _sprite;
 	sf::FloatRect _sourceRect;

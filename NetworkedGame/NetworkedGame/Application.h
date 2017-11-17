@@ -1,9 +1,11 @@
 #pragma once
 
 #include "SFML\Graphics.hpp"
+
 #include "Timer.h"
 #include "AssetManager.h"
 #include "InputHandler.h"
+#include "GameStateManager.h"
 
 class Application
 {
@@ -13,17 +15,20 @@ public:
 	
 	virtual void Update();
 	virtual void Draw();
-	virtual void CleanUp() = 0;
+	virtual void CleanUp();
 	bool IsRunning();
+	void Pause(bool);
+	bool Paused();
 	void Exit();
 
-	InputHandler* GetInputHandler();
-protected:
-	Timer* _timer;
-	AssetManager* _assetManager;
-	sf::RenderWindow* _renderWindow;
-	InputHandler* _inputHandler;
-	sf::View* _view;
-	bool _isRunning;
+	AssetManager * assetManager;
+	InputHandler * inputHandler;
+	GameStateManager * gamestateManager;
+protected:	
+	Timer * _timer;	
+	sf::RenderWindow * _render_window;	
+	sf::View * _view;
+	bool is_running;
+	bool is_paused;
 };
 

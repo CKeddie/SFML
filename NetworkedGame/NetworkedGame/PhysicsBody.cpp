@@ -26,16 +26,24 @@ PhysicsBody::~PhysicsBody()
 	_push_force = nullptr;
 }
 
+
+sf::Vector2f normalize(const sf::Vector2f& source)
+{
+	float length = sqrt((source.x * source.x) + (source.y * source.y));
+	if (length != 0)
+		return sf::Vector2f(source.x / length, source.y / length);
+	else
+		return source;
+}
+
+
 void PhysicsBody::Update(float deltaTime)
 {	
 	_velocity = _target_speed;
 
 	_velocity->y += (_gravity * !is_grounded) * _gravity_scale * deltaTime;
 
-	if (_velocity->y > 500)
-		_velocity->y = 500;
-	
-	_entity.Translate(*_velocity * deltaTime);
+	_entity.Translate(normalize(*_velocity) * deltaTime);
 }
 
 void PhysicsBody::Draw(sf::RenderWindow * window)

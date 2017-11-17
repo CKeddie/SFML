@@ -43,14 +43,26 @@
     <Filter Include="Source Files\Engine\World">
       <UniqueIdentifier>{696454d7-0be0-4481-afb6-0c24e93ebf6a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Networking">
-      <UniqueIdentifier>{d6c08eed-9f45-4012-aba0-d5de8a55511b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Networking">
       <UniqueIdentifier>{8cf00904-0c4c-46da-85e3-0f6e525eaae6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Engine\Entities\Colliders">
       <UniqueIdentifier>{51875848-16ba-4608-93ea-a10f130ed787}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Game\GameStates">
+      <UniqueIdentifier>{9c7d1664-5210-4ee7-a979-1f072ce778ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Game\GameStates">
+      <UniqueIdentifier>{2d3f3ee8-088f-4b52-8618-97ccb1e918f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\System\UserInterface">
+      <UniqueIdentifier>{43f1e32b-2d8d-4516-b699-7bb4f789b988}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\System\ButtonControl">
+      <UniqueIdentifier>{c4116f0b-4ef8-4f3f-8ce7-fe3a42633e2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\Entities\Animation">
+      <UniqueIdentifier>{bfcc2050-6ded-4b65-8827-743bf58a562d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -58,9 +70,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CatEntity.cpp">
-      <Filter>Source Files\Game</Filter>
-    </ClCompile>
-    <ClCompile Include="CatFighterGame.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
     <ClCompile Include="Animation.cpp">
@@ -72,13 +81,7 @@
     <ClCompile Include="AssetManager.cpp">
       <Filter>Source Files\Engine\System</Filter>
     </ClCompile>
-    <ClCompile Include="BaseGameState.cpp">
-      <Filter>Source Files\Engine\System</Filter>
-    </ClCompile>
     <ClCompile Include="GameStateManager.cpp">
-      <Filter>Source Files\Engine\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Game.cpp">
       <Filter>Source Files\Engine\System</Filter>
     </ClCompile>
     <ClCompile Include="InputHandler.cpp">
@@ -123,11 +126,41 @@
     <ClCompile Include="CircleCollider.cpp">
       <Filter>Source Files\Engine\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="Server.cpp">
-      <Filter>Source Files\Networking</Filter>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Source Files\Engine\System</Filter>
     </ClCompile>
-    <ClCompile Include="Client.cpp">
-      <Filter>Source Files\Networking</Filter>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source Files\Engine\System</Filter>
+    </ClCompile>
+    <ClCompile Include="ArenaState.cpp">
+      <Filter>Source Files\Game\GameStates</Filter>
+    </ClCompile>
+    <ClCompile Include="MainMenu.cpp">
+      <Filter>Source Files\Game\GameStates</Filter>
+    </ClCompile>
+    <ClCompile Include="NetworkArena.cpp">
+      <Filter>Source Files\Game\GameStates</Filter>
+    </ClCompile>
+    <ClCompile Include="Label.cpp">
+      <Filter>Source Files\Engine\System\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="ControlManager.cpp">
+      <Filter>Source Files\Engine\System\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="Control.cpp">
+      <Filter>Source Files\Engine\System\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonControl.cpp">
+      <Filter>Source Files\Engine\System\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CatAnimator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationState.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -137,14 +170,8 @@
     <ClInclude Include="CatEntity.h">
       <Filter>Header Files\Game</Filter>
     </ClInclude>
-    <ClInclude Include="CatFighterGame.h">
-      <Filter>Header Files\Game</Filter>
-    </ClInclude>
     <ClInclude Include="Entity.h">
       <Filter>Header Files\Engine\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseGameState.h">
-      <Filter>Header Files\Engine\System</Filter>
     </ClInclude>
     <ClInclude Include="SpriteRenderer.h">
       <Filter>Header Files\Engine\Entities</Filter>
@@ -159,15 +186,6 @@
       <Filter>Header Files\Engine\System</Filter>
     </ClInclude>
     <ClInclude Include="AssetManager.h">
-      <Filter>Header Files\Engine\System</Filter>
-    </ClInclude>
-    <ClInclude Include="Animation.h">
-      <Filter>Header Files\Engine\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Animator.h">
-      <Filter>Header Files\Engine\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
       <Filter>Header Files\Engine\System</Filter>
     </ClInclude>
     <ClInclude Include="MathsExt.h">
@@ -203,11 +221,47 @@
     <ClInclude Include="CircleCollider.h">
       <Filter>Header Files\Engine\Entities\Colliders</Filter>
     </ClInclude>
-    <ClInclude Include="Server.h">
-      <Filter>Header Files\Networking</Filter>
+    <ClInclude Include="Application.h">
+      <Filter>Header Files\Engine\System</Filter>
     </ClInclude>
-    <ClInclude Include="Client.h">
-      <Filter>Header Files\Networking</Filter>
+    <ClInclude Include="GameState.h">
+      <Filter>Header Files\Engine\System</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenu.h">
+      <Filter>Header Files\Game\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="ArenaState.h">
+      <Filter>Header Files\Game\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkArena.h">
+      <Filter>Header Files\Game\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="ControlManager.h">
+      <Filter>Header Files\Engine\System\ButtonControl</Filter>
+    </ClInclude>
+    <ClInclude Include="Control.h">
+      <Filter>Header Files\Engine\System\ButtonControl</Filter>
+    </ClInclude>
+    <ClInclude Include="Label.h">
+      <Filter>Header Files\Engine\System\ButtonControl</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonControl.h">
+      <Filter>Header Files\Engine\System\ButtonControl</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Header Files\Engine\Entities\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>Header Files\Engine\Entities\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="CatAnimator.h">
+      <Filter>Header Files\Engine\Entities\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationState.h">
+      <Filter>Header Files\Engine\Entities\Animation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

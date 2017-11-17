@@ -20,7 +20,7 @@ public:
 	bool ResolveCollision(Collider col) override;
 	void SetOffset(sf::Vector2f);
 	void SetSize(sf::Vector2f);
-	sf::Vector2f GetOffset() { return *_offset;	};
+	sf::Vector2f RectGetOffset() { return *_offset;	};
 protected:
 	sf::Vector2f* _size;
 	sf::Vector2f* _offset;

@@ -1,10 +1,10 @@
 #include "AssetManager.h"
 #include <iostream>
 
-AssetManager::AssetManager()
+AssetManager::AssetManager(const char * directory)
 {
+	root = directory;
 }
-
 
 AssetManager::~AssetManager()
 {

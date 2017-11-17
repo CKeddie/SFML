@@ -1,46 +1,39 @@
 #include "Animation.h"
 
-
-
-Animation::Animation(const char* name, int* frames, int numFrames, sf::Texture* txr, sf::IntRect rect)
+Animation::Animation(int* sequence, int numFrames, int txrWidth, int txrHeight, int fwidth, int fheight)
 {
-	_name = name;
-
-	_sequence = new int[numFrames];
-	for(int i = 0; i < numFrames; i++)
-		_sequence[i] = frames[i];
-
 	_numFrames = numFrames;
 
-	int numX = txr->getSize().x / rect.width;
-	int numY = txr->getSize().y / rect.height;
+	int numX = txrWidth / fwidth;
+	int numY = txrHeight / fheight;
 
-	for (int y = 0; y < numY; y++)
+	for (int i = 0; i < numFrames; ++i)
 	{
-		for (int x = 0; x < numX; x++)
-		{
-			_frames.push_back(sf::IntRect(x * rect.width, y * rect.height, rect.width, rect.height));
-		}
+		float row = (float)(sequence[i] % numX);
+		float col = (float)(sequence[i] / numX * numY) / numY;
+		
+		_frames.push_back(sf::IntRect(row * fwidth, col * fheight, fwidth, fheight));
 	}
-
-	_currentFrame = _sequence[0];
+	_frameTimer = 0.0f;
+	_currentFrame = 0;
 }
 
 Animation::~Animation()
 {
+
 }
 
 void Animation::Update(float deltaTime)
 {
 	_frameTimer += deltaTime;
-	if(_frameTimer >= _frameLength)
+	if(_frameTimer >= _numFrames)
 	{ 
 		_frameTimer = 0;
 		_iter++;
-		if (_iter >= _numFrames)
+		if (_iter > _numFrames)
 			Reset();
-		else 
-			_currentFrame = _sequence[_iter];		
+		else  if(_iter < _numFrames)
+			_currentFrame = _iter;		
 	}
 }
 
@@ -48,12 +41,7 @@ void Animation::Reset()
 {
 	_iter = 0;
 	_frameTimer = 0;
-	_currentFrame = _sequence[_iter];
-}
-
-std::string Animation::getName()
-{
-	return _name;
+	_currentFrame = 0;
 }
 
 sf::IntRect Animation::getCurrentFrame()

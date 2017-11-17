@@ -23,7 +23,7 @@ protected:
 	float _x_acceleration = .5f;
 	float _y_acceleration = 10.5f;
 	float _gravity = 9.81f;
-	float _gravity_scale = 32.0f;
+	float _gravity_scale = 16.0f;
 	sf::Vector2f* _velocity;
 	sf::Vector2f* _target_speed;
 	sf::Vector2f* _push_force;

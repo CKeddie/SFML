@@ -24,7 +24,11 @@ void SpriteRenderer::Draw(sf::RenderWindow * window)
 {
 	if (_sprite)
 	{
-		_sprite->setPosition(_entity.Position() - *_size);
+		_sprite->setScale((int)_direction, 1);
+		sf::Vector2f pos_dir;
+		pos_dir.x = _size->x * (float)_direction;
+		pos_dir.y = _size->y;
+		_sprite->setPosition(_entity.Position() - pos_dir);
 		window->draw(*_sprite);
 	}
 }
