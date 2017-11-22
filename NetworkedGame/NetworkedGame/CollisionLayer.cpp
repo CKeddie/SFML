@@ -63,6 +63,7 @@ void CollisionLayer::AddEntities(Entity * entity)
 void CollisionLayer::Broadphase()
 {
 	bool is_grounded = false;
+	bool is_walled = false;
 	
 	//loop through each entity
 	for (int i = 0; i < _entities.size(); i++)
@@ -117,15 +118,21 @@ void CollisionLayer::Broadphase()
 						if (std::abs(x_overlap) < std::abs(y_overlap))
 						{
 							if (d.x < 0)
-								x_overlap = -x_overlap;
-
+								x_overlap = -x_overlap + 1;
+							else
+								x_overlap = x_overlap - 1;
 							overlap.x = x_overlap;
+
+							is_walled |= true;
 
 						}
 						else
 						{
 							if (d.y < 0)
+							{
 								y_overlap = -y_overlap;
+								entity_body->SetTargetSpeedY(10.0f);
+							}
 							else
 								is_grounded |= true;
 
@@ -135,7 +142,8 @@ void CollisionLayer::Broadphase()
 				}//end check valid tile
 			}//end x
 		}//end y	
-		_entities[i]->Translate(overlap);
 		entity_body->SetGrounded(is_grounded);
+		entity_body->SetWalled(is_walled);
+		_entities[i]->Translate(overlap);
 	}//end i
 }

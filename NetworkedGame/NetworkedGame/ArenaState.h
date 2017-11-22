@@ -1,6 +1,5 @@
 #pragma once
 
-#include "SFML\Graphics.hpp"
 
 #include "GameState.h"
 #include "CatEntity.h"
@@ -8,8 +7,11 @@
 #include "Map.h"
 #include "Player.h"
 
+#include "ISubject.h"
+
 class ArenaState
 	: public GameState
+	, public ISubject<sf::Packet>
 {
 public:
 	ArenaState(Application & app);

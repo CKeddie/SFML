@@ -1,22 +1,22 @@
 #include "ArenaState.h"
-
-
+#include "GUILabel.h"
+#include "Application.h"
 
 ArenaState::ArenaState(Application & app)
 	: GameState(app)
 {
-	//Load Textures/k/
+	//Load Textures//
 	
-	AppRef.assetManager->LoadTexture("platformer_tileset.png", "media");
-	AppRef.assetManager->LoadTexture("catFighter.png", "media");
-	AppRef.assetManager->LoadTexture("TilemapDebug.png", "media");
-
-	////Construct Tilesets//
+	AppRef.assetManager->LoadTexture("platformer_tileset.png");
+	AppRef.assetManager->LoadTexture("catFighter.png");
+	AppRef.assetManager->LoadTexture("TilemapDebug.png");
+	
+	//Construct Tilesets//
 	tileset = new Tileset(32, 32, AppRef.assetManager->GetTexture("platformer_tileset"));
 	debug_tileset = new Tileset(32, 32, AppRef.assetManager->GetTexture("TilemapDebug"));
 
-	////Initialize Entities//
-	cat = new CatEntity(64, 64, 1, 1, 0, 0, 10, 11, 12);
+	//Initialize Entities//
+	cat = new CatEntity(64, 64, 1, 1, 0, 0, 10, 8, 12);
 	cat->GetComponent<SpriteRenderer>()
 		->SetSprite(*AppRef.assetManager->TextureToSprite("catFighter", 64, 64));
 
@@ -40,9 +40,11 @@ ArenaState::ArenaState(Application & app)
 	sprite = new sf::Sprite(*AppRef.assetManager->GetTexture("TilemapDebug"));
 	sprite->setColor(sf::Color::Red);
 	sprite->setTextureRect(sf::IntRect(0, 0, 32, 32));
-
+	
 	_player = new Player(*AppRef.inputHandler);
+
 	_player->SetEntity(cat);
+	Attach(AppRef.client);
 }
 
 
@@ -52,6 +54,7 @@ ArenaState::~ArenaState()
 
 void ArenaState::Update(float dt)
 {
+	GameState::Update(dt);
 	if (AppRef.inputHandler->IsKeyPressed(sf::Keyboard::Key::P))
 	{
 		if (AppRef.Paused())
@@ -62,7 +65,8 @@ void ArenaState::Update(float dt)
 
 	if (AppRef.Paused()) return;
 
-
+	if (AppRef.inputHandler->IsKeyPressed(sf::Keyboard::C))
+		AppRef.client->Connect("192.168.1.73", 5555);
 
 	world->Update(dt);
 	_player->Update(dt);
@@ -72,11 +76,10 @@ void ArenaState::Update(float dt)
 
 void ArenaState::Draw(sf::RenderWindow * renderWindow)
 {
-	renderWindow->clear(sf::Color::Black);
-
+	GameState::Draw(renderWindow);
 	world->Draw(renderWindow);
 	_player->Draw(renderWindow);
-	//cat->Draw(renderWindow);
+	_control_manager->Draw(renderWindow);
 
 	renderWindow->display();
 }

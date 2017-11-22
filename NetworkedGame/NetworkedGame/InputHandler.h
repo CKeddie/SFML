@@ -17,8 +17,15 @@ public:
 	bool IsKeyDown(sf::Keyboard::Key);
 	bool IsKeyPressed(sf::Keyboard::Key);
 	bool IsKeyReleased(sf::Keyboard::Key);
+	sf::Vector2i MousePosition();
+	bool IsMouseButtonPressed(sf::Mouse::Button button);
+	bool IsMouseButtonReleased(sf::Mouse::Button button);
+	bool IsMouseButtonUp(sf::Mouse::Button button);
+	bool IsMouseButtonDown(sf::Mouse::Button button);
 private:
 	std::array<bool, sf::Keyboard::KeyCount> _keystate;
+	std::array<bool, sf::Mouse::ButtonCount> _mousestate;
 	std::array<bool, sf::Keyboard::KeyCount> old_keystate;
+	std::array<bool, sf::Mouse::ButtonCount> old_mousestate;
 };
 

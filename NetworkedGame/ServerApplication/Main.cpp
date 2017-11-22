@@ -6,7 +6,7 @@ Server * _server;
 
 int main()
 {
-	_server = new Server();
+	_server = new Server(sf::IpAddress::getLocalAddress(), 5555);
 
 	while (true)
 	{

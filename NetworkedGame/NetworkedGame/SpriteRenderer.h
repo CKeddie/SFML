@@ -16,6 +16,7 @@ public:
 	~SpriteRenderer();
 	void Update(float) override;
 	void Draw(sf::RenderWindow*) override;
+	void SetColour(sf::Uint32 colour);
 	void SetSprite(sf::Sprite);
 	void SetSpriteRect(sf::IntRect);
 	void SetDirection(int dir);

@@ -1,11 +1,12 @@
 #pragma once
 
-#include"SFML\Graphics.hpp"
+#include "SFML\Graphics.hpp"
+#include "SFML\Network.hpp"
 
 class Entity;
 class InputHandler;
 
-class Player
+class Player 
 {
 public:
 	Player(InputHandler & inputHandler);
@@ -18,6 +19,7 @@ public:
 	Entity * GetEntity();
 
 private:
+	int _player_index = 0;
 	sf::Vector2f * _spawn_point;
 	InputHandler & _input_handler;
 	Entity * _player_entity;

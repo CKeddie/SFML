@@ -1,5 +1,4 @@
 #include "Player.h"
-
 #include "Entity.h"
 #include "InputHandler.h"
 #include "PhysicsBody.h"
@@ -16,11 +15,14 @@ enum Animations
 
 Player::Player(InputHandler & inputHandler)
 	: _input_handler(inputHandler)
+	
 {
+
 }
 
 Player::~Player()
 {
+
 }
 
 void Player::Update(float dt)
@@ -31,6 +33,7 @@ void Player::Update(float dt)
 		{
 			_player_entity->GetComponent<PhysicsBody>()->SetTargetSpeedX(-100.0f); 
 			_player_entity->GetComponent<SpriteRenderer>()->SetDirection(-1);
+			
 		}
 		else if (_input_handler.IsKeyDown(sf::Keyboard::D))
 		{
@@ -44,7 +47,7 @@ void Player::Update(float dt)
 		{
 			if (_input_handler.IsKeyPressed(sf::Keyboard::Space))
 			{
-				_player_entity->GetComponent<PhysicsBody>()->SetTargetSpeedY(-250.0f);
+				_player_entity->GetComponent<PhysicsBody>()->Impulse(-300.0f);
 				--_jump_charges;
 			}
 		}
@@ -55,6 +58,13 @@ void Player::Update(float dt)
 		if (_input_handler.IsKeyPressed(sf::Keyboard::R))
 		{
 			_player_entity->SetPosition(sf::Vector2f(64, 64));
+		}
+		if (_input_handler.IsKeyPressed(sf::Keyboard::T))
+		{
+			sf::Packet * p = new sf::Packet();
+			*p << _player_entity;
+			delete p;
+			p = nullptr;
 		}
 
 		if (_player_entity->GetComponent<PhysicsBody>()->IsGrounded())
@@ -74,16 +84,17 @@ void Player::Update(float dt)
 				_player_entity->GetComponent<CatAnimator>()->SetAnimationState(Fall);
 		}
 
-		_player_entity->Update(dt);
+			_player_entity->Update(dt);
 	}
 }
 
 void Player::Draw(sf::RenderWindow * renderWindow)
 {
 	if (_player_entity)
+	{
 		_player_entity->Draw(renderWindow);
+	}
 }
-
 
 void Player::SetEntity(Entity * entity)
 {
@@ -92,4 +103,12 @@ void Player::SetEntity(Entity * entity)
 Entity * Player::GetEntity()
 {
 	return _player_entity;
+}
+
+sf::Packet& operator << (sf::Packet & packet, const Entity& entity)
+{
+	//[0] - Protocol
+	//[1] - PlayerID
+	//[2] - 
+	return packet << 0 << "this is a packet of text";
 }

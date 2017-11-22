@@ -34,17 +34,11 @@
     <Filter Include="Header Files\Engine\System">
       <UniqueIdentifier>{8221ba23-317c-41ce-801f-8f585498ac2a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine\Entities">
-      <UniqueIdentifier>{a9f7df29-f089-4c06-91a8-9859d96a5569}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Engine\System">
       <UniqueIdentifier>{8838ae47-c022-4309-9214-3c307aae83d9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Engine\World">
       <UniqueIdentifier>{696454d7-0be0-4481-afb6-0c24e93ebf6a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Networking">
-      <UniqueIdentifier>{8cf00904-0c4c-46da-85e3-0f6e525eaae6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Engine\Entities\Colliders">
       <UniqueIdentifier>{51875848-16ba-4608-93ea-a10f130ed787}</UniqueIdentifier>
@@ -55,14 +49,20 @@
     <Filter Include="Source Files\Game\GameStates">
       <UniqueIdentifier>{2d3f3ee8-088f-4b52-8618-97ccb1e918f3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Engine\System\UserInterface">
-      <UniqueIdentifier>{43f1e32b-2d8d-4516-b699-7bb4f789b988}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Engine\System\ButtonControl">
-      <UniqueIdentifier>{c4116f0b-4ef8-4f3f-8ce7-fe3a42633e2d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Engine\Entities\Animation">
       <UniqueIdentifier>{bfcc2050-6ded-4b65-8827-743bf58a562d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\UserInterface">
+      <UniqueIdentifier>{43f1e32b-2d8d-4516-b699-7bb4f789b988}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Graphics">
+      <UniqueIdentifier>{c4707394-593e-44f5-99cb-f0de66f585c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Components">
+      <UniqueIdentifier>{a9f7df29-f089-4c06-91a8-9859d96a5569}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine\UserInterface">
+      <UniqueIdentifier>{8cf00904-0c4c-46da-85e3-0f6e525eaae6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -72,16 +72,10 @@
     <ClCompile Include="CatEntity.cpp">
       <Filter>Source Files\Game</Filter>
     </ClCompile>
-    <ClCompile Include="Animation.cpp">
-      <Filter>Source Files\Engine\Entities</Filter>
-    </ClCompile>
     <ClCompile Include="Animator.cpp">
-      <Filter>Source Files\Engine\Entities</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="AssetManager.cpp">
-      <Filter>Source Files\Engine\System</Filter>
-    </ClCompile>
-    <ClCompile Include="GameStateManager.cpp">
       <Filter>Source Files\Engine\System</Filter>
     </ClCompile>
     <ClCompile Include="InputHandler.cpp">
@@ -106,28 +100,25 @@
       <Filter>Source Files\Engine\World</Filter>
     </ClCompile>
     <ClCompile Include="Component.cpp">
-      <Filter>Source Files\Engine\Entities</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="Entity.cpp">
-      <Filter>Source Files\Engine\Entities</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="SpriteRenderer.cpp">
-      <Filter>Source Files\Engine\Entities</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="BoxCollider.cpp">
-      <Filter>Source Files\Engine\Entities</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="PhysicsBody.cpp">
-      <Filter>Source Files\Engine\Entities</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="Collider.cpp">
-      <Filter>Source Files\Engine\Entities</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="CircleCollider.cpp">
-      <Filter>Source Files\Engine\Entities</Filter>
-    </ClCompile>
-    <ClCompile Include="GameState.cpp">
-      <Filter>Source Files\Engine\System</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="Application.cpp">
       <Filter>Source Files\Engine\System</Filter>
@@ -135,32 +126,35 @@
     <ClCompile Include="ArenaState.cpp">
       <Filter>Source Files\Game\GameStates</Filter>
     </ClCompile>
-    <ClCompile Include="MainMenu.cpp">
-      <Filter>Source Files\Game\GameStates</Filter>
-    </ClCompile>
-    <ClCompile Include="NetworkArena.cpp">
-      <Filter>Source Files\Game\GameStates</Filter>
-    </ClCompile>
-    <ClCompile Include="Label.cpp">
-      <Filter>Source Files\Engine\System\UserInterface</Filter>
-    </ClCompile>
-    <ClCompile Include="ControlManager.cpp">
-      <Filter>Source Files\Engine\System\UserInterface</Filter>
-    </ClCompile>
-    <ClCompile Include="Control.cpp">
-      <Filter>Source Files\Engine\System\UserInterface</Filter>
-    </ClCompile>
-    <ClCompile Include="ButtonControl.cpp">
-      <Filter>Source Files\Engine\System\UserInterface</Filter>
-    </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CatAnimator.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files\Engine\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="AnimationState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Engine\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIControlManager.cpp">
+      <Filter>Source Files\Engine\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIControl.cpp">
+      <Filter>Source Files\Engine\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="GUILabel.cpp">
+      <Filter>Source Files\Engine\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Source Files\Game\GameStates</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStateManager.cpp">
+      <Filter>Source Files\Game\GameStates</Filter>
+    </ClCompile>
+    <ClCompile Include="GUIButton.cpp">
+      <Filter>Source Files\Engine\UserInterface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -180,9 +174,6 @@
       <Filter>Header Files\Engine\Entities</Filter>
     </ClInclude>
     <ClInclude Include="InputHandler.h">
-      <Filter>Header Files\Engine\System</Filter>
-    </ClInclude>
-    <ClInclude Include="GameStateManager.h">
       <Filter>Header Files\Engine\System</Filter>
     </ClInclude>
     <ClInclude Include="AssetManager.h">
@@ -224,29 +215,8 @@
     <ClInclude Include="Application.h">
       <Filter>Header Files\Engine\System</Filter>
     </ClInclude>
-    <ClInclude Include="GameState.h">
-      <Filter>Header Files\Engine\System</Filter>
-    </ClInclude>
-    <ClInclude Include="MainMenu.h">
-      <Filter>Header Files\Game\GameStates</Filter>
-    </ClInclude>
     <ClInclude Include="ArenaState.h">
       <Filter>Header Files\Game\GameStates</Filter>
-    </ClInclude>
-    <ClInclude Include="NetworkArena.h">
-      <Filter>Header Files\Game\GameStates</Filter>
-    </ClInclude>
-    <ClInclude Include="ControlManager.h">
-      <Filter>Header Files\Engine\System\ButtonControl</Filter>
-    </ClInclude>
-    <ClInclude Include="Control.h">
-      <Filter>Header Files\Engine\System\ButtonControl</Filter>
-    </ClInclude>
-    <ClInclude Include="Label.h">
-      <Filter>Header Files\Engine\System\ButtonControl</Filter>
-    </ClInclude>
-    <ClInclude Include="ButtonControl.h">
-      <Filter>Header Files\Engine\System\ButtonControl</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Header Files</Filter>
@@ -262,6 +232,24 @@
     </ClInclude>
     <ClInclude Include="AnimationState.h">
       <Filter>Header Files\Engine\Entities\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIControl.h">
+      <Filter>Header Files\Engine\UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIControlManager.h">
+      <Filter>Header Files\Engine\UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="GUILabel.h">
+      <Filter>Header Files\Engine\UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateManager.h">
+      <Filter>Header Files\Game\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Header Files\Game\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="GUIButton.h">
+      <Filter>Header Files\Engine\UserInterface</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -32,7 +32,7 @@ void Animator::SetAnimationState(int id)
 		return;
 	}
 
-	if (_current_anim) 
+	if (_current_anim)
 	{
 		if (_current_anim != _animations[id])
 		{
@@ -40,9 +40,8 @@ void Animator::SetAnimationState(int id)
 			_current_anim = _animations[id];
 		}
 	}
-	else 
+	else
 		_current_anim = _animations[id];
-	
 }
 
 int Animator::GetCurrentState()

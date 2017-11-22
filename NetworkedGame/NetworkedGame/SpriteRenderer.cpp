@@ -33,6 +33,11 @@ void SpriteRenderer::Draw(sf::RenderWindow * window)
 	}
 }
 
+void SpriteRenderer::SetColour(sf::Uint32 colour)
+{
+	_sprite->setColor((sf::Color)colour);
+}
+
 void SpriteRenderer::SetSprite(sf::Sprite sprite)
 {
 	_sprite = new sf::Sprite(sprite);

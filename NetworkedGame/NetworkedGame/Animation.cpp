@@ -26,7 +26,7 @@ Animation::~Animation()
 void Animation::Update(float deltaTime)
 {
 	_frameTimer += deltaTime;
-	if(_frameTimer >= _numFrames)
+	if(_frameTimer >= _frameLength/20)
 	{ 
 		_frameTimer = 0;
 		_iter++;

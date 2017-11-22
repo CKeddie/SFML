@@ -8,7 +8,7 @@ class Server
 {
 public:
 
-	Server();
+	Server(sf::IpAddress, int port);
 	~Server();
 	void Update();
 	void CleanUp();
@@ -26,7 +26,7 @@ private:
 	sf::SocketSelector _socket_selector;
 	std::vector<sf::TcpSocket*> _tcp_connections;
 
-	int _server_port = 5555;
+	int _server_port = 0;
 	sf::Thread _listening_thread;
 	sf::Thread _sender_reciever_thread;
 };

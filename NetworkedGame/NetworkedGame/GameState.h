@@ -1,6 +1,8 @@
 #pragma once
-#include "SFML\Graphics\RenderWindow.hpp"
-#include "Application.h"
+#include "SFML\Graphics.hpp"
+#include "GUIControlManager.h"
+
+class Application;
 
 class GameState
 {
@@ -11,5 +13,6 @@ public:
 	virtual void Draw(sf::RenderWindow*);
 protected:
 	Application & AppRef;
+	GUIControlManager * _control_manager;
 };
 

@@ -38,18 +38,25 @@ sf::Vector2f normalize(const sf::Vector2f& source)
 
 
 void PhysicsBody::Update(float deltaTime)
-{	
+{
+	if (is_grounded)
+		_target_speed->y = Lerp(_target_speed->y, 0.0f, _gravity * deltaTime);
+	else
+		_target_speed->y = Lerp(_target_speed->y, _target_speed->y + _gravity, _gravity * deltaTime);
+	
 	_velocity = _target_speed;
 
-	_velocity->y += (_gravity * !is_grounded) * _gravity_scale * deltaTime;
+	_entity.Translate(*_velocity * deltaTime);
 
-	_entity.Translate(normalize(*_velocity) * deltaTime);
+	
+
 }
 
 void PhysicsBody::Draw(sf::RenderWindow * window)
 {
-	//if (!_debug_mode)
-	//	return;
+	if (!_debug_mode)
+		return;
+	
 	sf::VertexArray vel(sf::Lines, 2);
 	vel[0].color = sf::Color::Red;
 	vel[1].color = sf::Color::Red;
@@ -88,10 +95,12 @@ void PhysicsBody::SetTargetSpeedY(float f)
 	_target_speed->y = f;
 }
 
-void PhysicsBody::Impulse(sf::Vector2f direction)
+void PhysicsBody::Impulse(float force)
 {
-	_target_speed->x = direction.x;
-	_target_speed->y = direction.y;
+	if(is_walled)
+		_target_speed->x = -_velocity->x;
+
+	_target_speed->y =  force;
 }
 
 void PhysicsBody::SetGrounded(bool isGrounded)
@@ -104,3 +113,12 @@ bool PhysicsBody::IsGrounded()
 	return is_grounded;
 }
 
+void PhysicsBody::SetWalled(bool state)
+{
+	is_walled = state;
+}
+
+bool PhysicsBody::IsWalled()
+{
+	return is_walled;
+}
