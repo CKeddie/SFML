@@ -1,33 +1,39 @@
 #pragma once
-#include "SFML\Network.hpp"
-#include <iostream>
+#include "Client.h"
+#include "IObserver.h"
 
-class Client;
+#include "SFML\Network.hpp"
+
+#include <iostream>
+#include <memory>
+#include <vector>
+#include <string>
 
 class Server
+	//: public IObserver<sf::Packet>
 {
 public:
 
 	Server(sf::IpAddress, int port);
 	~Server();
-	void Update();
 	void CleanUp();
-	void Reciever();
-	void ExecutionThread();
-	void Listener();
+	void Recieve();
+	void Execute();
+	void Listen();
+	void SendPacket(sf::Packet packet, int clientException);
+	//void OnNotify(sf::Packet)override;
 private:
 	sf::IpAddress _server_ip;
-	
-	sf::TcpSocket _tcp_socket;
-	sf::UdpSocket _udp_socket;
-	
+		
 	sf::TcpListener _tcp_listener;
 
 	sf::SocketSelector _socket_selector;
-	std::vector<sf::TcpSocket*> _tcp_connections;
 
-	int _server_port = 0;
-	sf::Thread _listening_thread;
-	sf::Thread _sender_reciever_thread;
+	std::vector<Client*> _clients;
+
+	unsigned short _server_port = 0;
+	int _clientID, _clientCount;
+	//sf::Thread _listening_thread;
+	//sf::Thread _sender_reciever_thread;
 };
 

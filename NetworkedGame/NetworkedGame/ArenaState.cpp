@@ -44,7 +44,7 @@ ArenaState::ArenaState(Application & app)
 	_player = new Player(*AppRef.inputHandler);
 
 	_player->SetEntity(cat);
-	Attach(AppRef.client);
+	//Attach(AppRef.client);
 }
 
 
@@ -66,8 +66,27 @@ void ArenaState::Update(float dt)
 	if (AppRef.Paused()) return;
 
 	if (AppRef.inputHandler->IsKeyPressed(sf::Keyboard::C))
-		AppRef.client->Connect("192.168.1.73", 5555);
+	{
+		if (AppRef.client->GetTcpSocket()->connect(sf::IpAddress::getLocalAddress(), 5555) != sf::Socket::Done)
+			std::cout << "Error connecting" << std::endl;
+		else
+		{
+			std::cout << "Success " << std::endl;
+			sf::Packet p;
+			p << 0;
+			p << AppRef.client->GetID();
+			if (AppRef.client->GetTcpSocket()->send(p) != sf::Socket::Done)
+			{
+				std::cout << "Send fail " << std::endl;
 
+			}
+			else
+			{
+				std::cout << "Send success " << std::endl;
+
+			}
+		}
+	}
 	world->Update(dt);
 	_player->Update(dt);
 

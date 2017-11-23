@@ -7,7 +7,8 @@ Application::Application(std::string title, int width, int height, int offsetX, 
 	
 	std::string str;
 	std::cin >> str;
-	client = new Client(str);
+	sf::TcpSocket * socket = new sf::TcpSocket();
+	client = new Client(socket, 0);
 
 	std::cout << "Welcome " << str << "." << std::endl;
 
