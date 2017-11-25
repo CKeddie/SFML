@@ -6,12 +6,7 @@ Server * _server;
 
 int main()
 {
-	_server = new Server(sf::IpAddress::getLocalAddress(), 5555);
-	_server->Execute();
-	while (true)
-	{
-		//Hang
-	}
-
+	_server = new Server();
+	_server->Run();
 	return 0;
 }

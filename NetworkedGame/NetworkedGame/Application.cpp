@@ -1,34 +1,24 @@
 #include "Application.h"
 #include "ArenaState.h"
 
-Application::Application(std::string title, int width, int height, int offsetX, int offsetY)
+
+Application::Application(std::string title, std::string clientName, float width, float height, float offsetX, float offsetY)
 {
 	std::cout << "Application Initialized. Please provide profile name." << std::endl;
 	
-	std::string str;
-	std::cin >> str;
-	sf::TcpSocket * socket = new sf::TcpSocket();
-	client = new Client(socket, 0);
-
-	std::cout << "Welcome " << str << "." << std::endl;
-
 	_running = true;
-	_timer = new Timer();
 	_view = new sf::View(sf::Vector2f(offsetX, offsetY), sf::Vector2f(width, height));
 	screenBounds = sf::FloatRect(0, 0, width, height);
 	_render_window = new sf::RenderWindow(sf::VideoMode(width, height), title);
 	assetManager = new AssetManager("../Assets");
 	inputHandler = new InputHandler();
+	networkHandler = new NetworkHandler(clientName, "localhost", 45000);
 	gamestateManager = new GameStateManager();
 	gamestateManager->PushState(new ArenaState(*this));
 }
 
-
 Application::~Application()
 {
-	delete _timer;
-	_timer = nullptr;
-
 	delete assetManager;
 	assetManager = nullptr;
 
@@ -41,16 +31,19 @@ Application::~Application()
 
 void Application::Update()
 {
-	inputHandler->Update();
-
-	_timer->frame();
-
-	sf::Event _event;
+	
+	inputHandler->Update();	
+	sf::Event event;
 
 	//poll input events
-	while (_render_window->pollEvent(_event))
-	{
-		inputHandler->HandleEvents(_event);
+	while (_render_window->pollEvent(event))
+	{		
+		if (event.type == sf::Event::GainedFocus)
+			_has_focus = true;
+		else if (event.type == sf::Event::LostFocus)
+			_has_focus = false;
+		
+		if(_has_focus) inputHandler->HandleEvents(event);
 	}
 
 	//exit application
@@ -61,21 +54,20 @@ void Application::Update()
 	if (inputHandler->IsKeyPressed(sf::Keyboard::Key::F1))
 		_debug_mode = !_debug_mode;
 	
-	gamestateManager->Update(_timer->getTime());
+	sf::Time deltaTime = clock.restart();
+	gamestateManager->Update(deltaTime.asSeconds());
 
 }
 
 void Application::Draw()
 {
+	clock.restart();
 	_render_window->setView(*_view);
 	gamestateManager->Draw(_render_window);
 }
 
 void Application::CleanUp()
 {
-	delete _timer;
-	_timer = nullptr;
-
 	delete assetManager;
 	assetManager = nullptr;
 

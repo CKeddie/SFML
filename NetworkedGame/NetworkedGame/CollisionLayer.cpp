@@ -33,11 +33,11 @@ float CollisionLayer::IntervalDistance(float minA, float maxA, float minB, float
 
 void CollisionLayer::Draw(sf::RenderWindow * window, Tileset * tileset)
 {
-	for (int y = 0; y < *_height; ++y)
+	for (unsigned int y = 0; y < _height; ++y)
 	{
-		for (int x = 0; x < *_width; ++x)
+		for (unsigned int x = 0; x < _width; ++x)
 		{
-			int idx = x + y * *_width;
+			int idx = x + y * _width;
 			int tidx = _indices[idx];
 			if (tidx > 0)
 			{
@@ -46,7 +46,8 @@ void CollisionLayer::Draw(sf::RenderWindow * window, Tileset * tileset)
 				int w = sprite->getTextureRect().width;
 				int h = sprite->getTextureRect().height;
 
-				sprite->setPosition(sf::Vector2f(x * w - w / 2, y * w - w / 2));
+				sprite->setPosition(
+					sf::Vector2f((float)x * (float)w - (float)w / 2.0f, (float)y * (float)w - (float)w / 2.0f));
 				window->draw(*sprite);
 			}
 		}
@@ -66,7 +67,7 @@ void CollisionLayer::Broadphase()
 	bool is_walled = false;
 	
 	//loop through each entity
-	for (int i = 0; i < _entities.size(); i++)
+	for (unsigned int i = 0; i < _entities.size(); i++)
 	{
 		BoxCollider * entity_bounds = _entities[i]->GetComponent<BoxCollider>();
 		PhysicsBody * entity_body = _entities[i]->GetComponent<PhysicsBody>();
@@ -81,9 +82,9 @@ void CollisionLayer::Broadphase()
 		float y_max_a = entity_bounds->GetMax(sf::Vector2f(0, 1));
 
 		//add velocity
-		int map_index_x = (entity_position.x ) / _tile_width ;
-		int map_index_y = (entity_position.y ) / _tile_height;
-											 
+		int map_index_x = int(entity_position.x  / _tile_width );
+		int map_index_y = int(entity_position.y  / _tile_height);
+											 				
 		sf::Vector2f overlap;
 
 		//iterate grid of 9 around map index of player
@@ -95,8 +96,13 @@ void CollisionLayer::Broadphase()
 				if (this->GetIndex(map_index_x + x,  map_index_y + y))
 				{
 					//set position and size of the map tile
-					sf::Vector2f tile_coord = sf::Vector2f((map_index_x + x) * _tile_width, (map_index_y + y) * _tile_height);
-					sf::Vector2f tile_size = sf::Vector2f(_tile_width / 2, _tile_height / 2);
+					sf::Vector2f tile_coord = sf::Vector2f(
+							float((map_index_x + x) * _tile_width), 
+							float((map_index_y + y) * _tile_height));
+
+					sf::Vector2f tile_size = sf::Vector2f(
+						float(_tile_width / 2), 
+						float(_tile_height / 2));
 
 					//set min and max points of the tile
 					float x_min_b = tile_coord.x - tile_size.x;
@@ -110,7 +116,6 @@ void CollisionLayer::Broadphase()
              
 					bool is_colliding = x_overlap <= 0 && y_overlap <= 0;
 					
-
 					//Collision found
 					if (is_colliding)
 					{						

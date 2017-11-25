@@ -3,26 +3,58 @@
 #include "SFML\Graphics.hpp"
 #include "SFML\Network.hpp"
 
-class Entity;
-class InputHandler;
+#include "CatEntity.h"
+#include "PhysicsBody.h"
+#include "CatAnimator.h"
+#include "SpriteRenderer.h"
+#include "ISubject.h"
+#include "Map.h"
 
-class Player 
+class Player
+	: public ISubject<sf::Packet>
 {
+protected:
+	enum AnimationState
+	{
+		Idle,
+		Run,
+		Jump,
+		Fall,
+	};
+
+	enum PlayerDirection
+	{
+		Left = -1,
+		Right = 1,
+	};
+
 public:
-	Player(InputHandler & inputHandler);
+	Player();
+	Player(std::string name, int id);
 	~Player();
 
-	void Update(float);
-	void Draw(sf::RenderWindow*);
+	virtual void Update(float);
+	virtual void Draw(sf::RenderWindow*);
 
-	void SetEntity(Entity * entity);
+	void CreateEntity(sf::Sprite * sprite, Map & map, sf::Vector2f spawn);
+
+	int GetID() { return _player_id; }
+	void SetID(int id) { _player_id = id; }
+
+	std::string GetName() { return _name; }
+	void SetName(std::string name) { _name = name; }
+		
 	Entity * GetEntity();
+	
+	void ResetEntity();
+protected:
+	std::string _name = "Default";
+	int _player_id = 0;
 
-private:
-	int _player_index = 0;
-	sf::Vector2f * _spawn_point;
-	InputHandler & _input_handler;
-	Entity * _player_entity;
-	int _max_charges = 2;
-	int _jump_charges = _max_charges;
+	sf::Vector2f _spawn_point;
+	Entity * _entity;
+	PhysicsBody * _body;
+	SpriteRenderer * _sprite_renderer;
+	CatAnimator * _animator;
 };
+

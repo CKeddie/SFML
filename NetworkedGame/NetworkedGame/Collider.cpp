@@ -24,7 +24,7 @@ void Collider::Update(float)
 
 void Collider::Draw(sf::RenderWindow * window)
 {
-	//if(_debug_mode)
+	if(_debug_mode)
 		window->draw(_debug_vertices);
 }
 

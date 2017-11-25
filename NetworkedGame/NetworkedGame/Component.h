@@ -16,6 +16,6 @@ public:
 
 protected:
 	Entity& _entity;
-	bool _debug_mode = false;
+	bool _debug_mode = true;
 };
 

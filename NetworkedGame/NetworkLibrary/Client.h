@@ -12,19 +12,20 @@
 class Client
 {
 public: 
-	Client(sf::TcpSocket * socket, int id);
+	Client(sf::TcpSocket * socket, sf::Int32 id);
 	~Client();
 
-	int GetID() { return _id; }
+	sf::Int32 GetID() { return _id; }
 	void SetName(const std::string name) { _name = name; }
+	std::string GetName() { return _name; }
 
 	sf::TcpSocket * GetTcpSocket() { return _tcp_socket; };
 
 	void SetTimeout(sf::Time time) { _timeout = time; }
 	sf::Time GetTimeout() { return _timeout; }
 protected:
-	int _id = 0;
-	int _authority = 1;
+	sf::Int32 _id = 0;
+	sf::Int32 _authority = 1;
 	std::string _name;
 	sf::TcpSocket * _tcp_socket;
 	sf::Time _timeout;

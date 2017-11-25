@@ -10,30 +10,38 @@
 #include <string>
 
 class Server
-	//: public IObserver<sf::Packet>
 {
+private:
+	enum InstructionSet
+	{
+		OnConnect,
+		OnDisconnect,
+		OnUpdatePlayers,
+		OnCreatePlayers,
+	};
 public:
-
-	Server(sf::IpAddress, int port);
+	Server(unsigned short port = 45000);
 	~Server();
 	void CleanUp();
+	void Run();
 	void Recieve();
-	void Execute();
-	void Listen();
-	void SendPacket(sf::Packet packet, int clientException);
-	//void OnNotify(sf::Packet)override;
+	void HandlePacket(sf::Packet incomingPacket, int socketID);
+	void SendPacketAll(sf::Packet packet, int clientException);
+	void SendPacket(sf::Packet packet, int client);
 private:
-	sf::IpAddress _server_ip;
-		
-	sf::TcpListener _tcp_listener;
+	bool _isRunning = true;
 
-	sf::SocketSelector _socket_selector;
+	sf::IpAddress _ipAdress;
+	unsigned short _port;
+
+	sf::TcpListener _listener;
+	sf::SocketSelector _selector;
+
+	int _maxPlayerNumber;
+	int _currentID;
+	int _clientCount;
 
 	std::vector<Client*> _clients;
-
-	unsigned short _server_port = 0;
-	int _clientID, _clientCount;
-	//sf::Thread _listening_thread;
-	//sf::Thread _sender_reciever_thread;
+	sf::Clock m_clock;
 };
 

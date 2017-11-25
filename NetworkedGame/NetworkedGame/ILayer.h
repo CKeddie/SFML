@@ -16,8 +16,8 @@ public:
 	int  GetIndex(int i);
 	int  GetIndex(int x, int y);
 protected:
-	int* _width;
-	int* _height;
+	int _width;
+	int _height;
 	int* _indices;
 };
 

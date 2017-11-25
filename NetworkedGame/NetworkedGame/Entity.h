@@ -46,11 +46,13 @@ public:
 	{
 		_position = new sf::Vector2f(pos);
 	}	
-	void SetPosition(int x, int y) 
+	void SetPosition(float x, float y) 
 	{
 		_position = new sf::Vector2f(x, y);
 	}
 	
+
+
 	virtual void Translate(sf::Vector2f amount) { _position->x += amount.x; _position->y += amount.y; }
 
 protected:

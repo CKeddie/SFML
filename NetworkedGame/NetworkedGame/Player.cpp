@@ -1,114 +1,113 @@
 #include "Player.h"
-#include "Entity.h"
-#include "InputHandler.h"
-#include "PhysicsBody.h"
-#include "CatAnimator.h"
-#include "SpriteRenderer.h"
 
-enum Animations
-{
-	Idle,
-	Run,
-	Jump,
-	Fall,
-};
-
-Player::Player(InputHandler & inputHandler)
-	: _input_handler(inputHandler)
-	
+Player::Player()
+	: ISubject<sf::Packet>()
 {
 
+}
+
+Player::Player(std::string name, int id)
+	: Player()
+{
+	_name = name;
+	_player_id = id;
 }
 
 Player::~Player()
 {
+	if (_entity)
+	{
+		delete _entity;
+		_entity = nullptr;
+	}
 
+	if (_sprite_renderer)
+	{
+		delete _sprite_renderer;
+		_sprite_renderer = nullptr;
+	}
+
+	if (_body)
+	{
+		delete _body;
+		_body = nullptr;
+	}
 }
 
 void Player::Update(float dt)
 {
-	if (_player_entity)
+	if (!_entity)return;
+
+	//Sprite Flipping
+	if (_body->GetVelocity().x > 0)
 	{
-		if (_input_handler.IsKeyDown(sf::Keyboard::A))
-		{
-			_player_entity->GetComponent<PhysicsBody>()->SetTargetSpeedX(-100.0f); 
-			_player_entity->GetComponent<SpriteRenderer>()->SetDirection(-1);
-			
-		}
-		else if (_input_handler.IsKeyDown(sf::Keyboard::D))
-		{
-			_player_entity->GetComponent<PhysicsBody>()->SetTargetSpeedX(100.0f);
-			_player_entity->GetComponent<SpriteRenderer>()->SetDirection(1);
-		}
-		else
-			_player_entity->GetComponent<PhysicsBody>()->SetTargetSpeedX(0.0f);
-		
-		if (_jump_charges > 0)
-		{
-			if (_input_handler.IsKeyPressed(sf::Keyboard::Space))
-			{
-				_player_entity->GetComponent<PhysicsBody>()->Impulse(-300.0f);
-				--_jump_charges;
-			}
-		}
-			
-		if (_player_entity->GetComponent<PhysicsBody>()->IsGrounded())
-			_jump_charges = _max_charges;
-
-		if (_input_handler.IsKeyPressed(sf::Keyboard::R))
-		{
-			_player_entity->SetPosition(sf::Vector2f(64, 64));
-		}
-		if (_input_handler.IsKeyPressed(sf::Keyboard::T))
-		{
-			sf::Packet * p = new sf::Packet();
-			*p << _player_entity;
-			delete p;
-			p = nullptr;
-		}
-
-		if (_player_entity->GetComponent<PhysicsBody>()->IsGrounded())
-		{
-			if (_player_entity->GetComponent<PhysicsBody>()->GetVelocity()->x > 0)
-				_player_entity->GetComponent<CatAnimator>()->SetAnimationState(Run);
-			else if(_player_entity->GetComponent<PhysicsBody>()->GetVelocity()->x < 0)
-				_player_entity->GetComponent<CatAnimator>()->SetAnimationState(Run);
-			else
-				_player_entity->GetComponent<CatAnimator>()->SetAnimationState(Idle);
-		}
-		else
-		{
-			if (_player_entity->GetComponent<PhysicsBody>()->GetVelocity()->y > 0)
-				_player_entity->GetComponent<CatAnimator>()->SetAnimationState(Jump);
-			else if (_player_entity->GetComponent<PhysicsBody>()->GetVelocity()->y < 0)
-				_player_entity->GetComponent<CatAnimator>()->SetAnimationState(Fall);
-		}
-
-			_player_entity->Update(dt);
+		_sprite_renderer->SetDirection(Right);
 	}
+	else if (_body->GetVelocity().x < 0)
+	{
+ 		_sprite_renderer->SetDirection(Left);
+	}
+
+	//Run & Idle animations
+	if (_body->IsGrounded())
+	{
+		if (std::abs(_body->GetVelocity().x) > 0.1f)
+		{
+			_animator->SetAnimationState(Run);
+		}
+		else
+		{
+			_animator->SetAnimationState(Idle);
+		}
+	}
+	else
+	{
+		//Jump Animation
+		if (_body->GetVelocity().y > 0)
+		{
+			_animator->SetAnimationState(Jump);
+		}
+		//Fall Animation
+		else if (_body->GetVelocity().y < 0)
+		{
+			_animator->SetAnimationState(Fall);
+		}
+	}
+
+	_entity->Update(dt);
 }
 
 void Player::Draw(sf::RenderWindow * renderWindow)
 {
-	if (_player_entity)
-	{
-		_player_entity->Draw(renderWindow);
-	}
+	if (!_entity)return;
+
+	_entity->Draw(renderWindow);
 }
 
-void Player::SetEntity(Entity * entity)
-{
-	_player_entity = entity;
+void Player::CreateEntity(sf::Sprite * sprite, Map & map, sf::Vector2f spawn)
+{	
+	_spawn_point = spawn;
+	_entity = new CatEntity(spawn, sf::Vector2f(1, 1), 0, sf::Vector2f(0, 10), sf::Vector2f(8, 12));
+
+	_sprite_renderer = _entity->GetComponent<SpriteRenderer>();
+	_body = _entity->GetComponent<PhysicsBody>();
+	_animator = _entity->GetComponent<CatAnimator>();
+	_sprite_renderer->SetSprite(*sprite);
+
+	_entity->SetPosition(_spawn_point);
+
+	map.GetCollisionLayer()->AddEntities(_entity);
 }
+
 Entity * Player::GetEntity()
 {
-	return _player_entity;
+	return _entity;
 }
 
-sf::Packet& operator << (sf::Packet & packet, const Entity& entity)
+void Player::ResetEntity()
 {
-	//[0] - Protocol
-	//[1] - PlayerID
-	//[2] - 
-	return packet << 0 << "this is a packet of text";
+	if (!_entity) return;
+
+	_entity->SetPosition(_spawn_point);
+	//add health
 }

@@ -1,167 +1,138 @@
 #include "Server.h"
-//#include "Client.h"
 
-
-Server::Server(sf::IpAddress address, int port)
-	//: _listening_thread(&Server::Listen, this)
-	//, _sender_reciever_thread(&Server::Recieve, this)
+Server::Server(unsigned short port)
 {
-	_server_ip = address;
-	_server_port = port;
-	std::cout << "Initialized Server" << std::endl;
-	std::cout << "Address: " << _server_ip << std::endl;
-	std::cout << "Port: " << _server_port << std::endl;
+	_port = port;
 
-	_tcp_listener.listen(_server_port);
-	_socket_selector.add(_tcp_listener);
-	
-	//_listening_thread.launch();
-	//_sender_reciever_thread.launch();
+	std::cout << "Initialized Server" << std::endl;
+	std::cout << "Port: " << _port << std::endl;
+
+	_listener.listen(_port);
+	_selector.add(_listener);
 }
 
 
 Server::~Server()
 {
-	//_listening_thread.terminate();
-	//_sender_reciever_thread.terminate();
 }
 
 void Server::CleanUp()
 {
 }
 
-void Server::Recieve()
+void Server::Run()
 {
-}
-
-//void Server::Recieve()
-//{
-//	sf::Mutex m;
-//	while (true)
-//	{
-//		if (_socket_selector.wait())
-//		{
-//			m.lock();
-//			for (std::vector<sf::TcpSocket*>::size_type i = 0; i != _clients.size(); i++)
-//			{
-//				if (_socket_selector.isReady(_clients[i].))
-//				{
-//					std::cout << "Connection ready." << std::endl;
-//					sf::Packet data;
-//					if (_clients[i].getTcpSocket().receive(data) != sf::Socket::Done)
-//					{
-//						continue;
-//					}
-//					std::string s;
-//					data >> s;
-//					std::cout << s << std::endl;
-//					std::cout << "Received Data: " << s << std::endl;
-//				}
-//
-//			}
-//			m.unlock();
-//		}
-//	}
-//}
-
-void Server::Execute()
-{
-	while (true)
+	while (_isRunning)
 	{
-		if (_socket_selector.wait())
+		if (_selector.wait())
 		{
-			if (_socket_selector.isReady(_tcp_listener))
+			if (_selector.isReady(_listener))
 			{
-				sf::TcpSocket tempSocket;
-
-				if (_tcp_listener.accept(tempSocket) == sf::Socket::Done)
+				sf::TcpSocket * socket = new sf::TcpSocket();
+				sf::Socket::Status status = _listener.accept(*socket);
+				
+				switch (status)
 				{
-					_clients.push_back(new Client(&tempSocket, _clientID));
-					std::cout << "Client connected from Address:"
-						<< tempSocket.getRemoteAddress()
-						<< ", Port: "
-						<<tempSocket.getLocalPort() << std::endl;
-					
-					
-					_socket_selector.add(*_clients.back()->GetTcpSocket());
-					
-					_clientCount++;
-					
-					sf::Packet welcomePacket;
-					welcomePacket << 0;//instruction
-					welcomePacket << _clientID;
-
-					if (_clients.back()->GetTcpSocket()->send(welcomePacket) != sf::Socket::Done)
-						std::cout << "Error: could not send packet." << std::endl;
-					else
-						std::cout << "Successfully send data packet" << std::endl;
-					_clientID++;
-				}
-				else
+				case sf::Socket::Done:
 				{
-					for (int i = 0; i < _clients.size(); i++)
+					sf::Packet packet;
+					if (socket->receive(packet) == sf::Socket::Done)
 					{
-						if (_socket_selector.isReady(*_clients[i]->GetTcpSocket()))
-						{
-							sf::Packet received;
-							
-							if (_clients[i]->GetTcpSocket()->receive(received) != sf::Socket::Done)
-							{
-								int num, id;
-								received >> num;
-								received >> id;
-
-								if (num == 1)
-								{
-									
-								}
-							}
-							//set timeout
-
-						}
-					}
+						_clients.push_back(new Client(socket, _clientCount));
+						_selector.add(*_clients.back()->GetTcpSocket());
+						HandlePacket(packet, _clientCount);
+						printf("Client[%i]: '%s' has connected.", _clientCount, _clients[_clientCount]->GetName());
+						_clientCount++;
+					}					
+					break;
 				}
+				case sf::Socket::Error:
+					std::cout << "Error: Could not accept client." << std::endl;
+					break;
+				}
+				
+			}
+			else//Receive
+			{
+				Recieve();
 			}
 		}
 	}
 }
 
-void Server::Listen()
+
+void Server::Recieve()
 {
-	while (true)
+	for (int i = 0; i < _clients.size(); i++)
 	{
-		sf::Mutex m;
-		m.lock();
-		std::cout << "Listening on port: " << _server_port << std::endl;
-		if (_tcp_listener.listen(_server_port) != sf::Socket::Done)
+		if (_selector.isReady(*_clients[i]->GetTcpSocket()))
 		{
-			std::cout << "Could not listen on port: " << _server_port << " may be in use." << std::endl;
-			return;
+			sf::Packet received;
+			if (_clients[i]->GetTcpSocket()->receive(received) == sf::Socket::Done)
+			{
+				HandlePacket(received, i);
+			}
 		}
-
-		sf::TcpSocket client;// = new sf::TcpSocket();
-		if (_tcp_listener.accept(client) != sf::Socket::Done)
-		{
-			std::cout << "Could not accept client" << std::endl;
-			return;
-		}
-
-		std::cout << "Accepted client: " << client.getRemoteAddress() << " - " << client.getLocalPort() << std::endl;
-		//_clients.push_back(client);
-		_socket_selector.add(client);
-		m.unlock();
 	}
 }
 
-void Server::SendPacket(sf::Packet packet, int clientException)
+void Server::HandlePacket(sf::Packet incomingPacket, int socketID)
+{
+	sf::Int32 transport;
+	sf::Int32 protocol;
+	InstructionSet instruction;
+	
+	incomingPacket >> transport >> protocol;
+	
+	instruction = (InstructionSet)protocol;
+	
+	const char* message = "";
+	sf::Packet outgoingPacket;
+
+	switch (instruction)
+	{
+		case Server::OnConnect:
+		{
+			sf::String name;
+			incomingPacket >> name;
+			_clients[socketID]->SetName(name);
+
+			message = "(WelcomePack)";
+			outgoingPacket << (sf::Int8)OnConnect;
+			outgoingPacket << socketID;
+			outgoingPacket << _clients.size();
+			SendPacket(outgoingPacket, socketID);
+			break;
+		}
+	case Server::OnDisconnect:
+		message = "(Disconnected)";
+		_clients.erase(_clients.begin() + socketID);
+		SendPacketAll(outgoingPacket, socketID);
+		break;
+	case Server::OnUpdatePlayers:
+		break;
+	case Server::OnCreatePlayers:
+		SendPacketAll(outgoingPacket, socketID);
+		break;
+	}
+
+	printf("Client: %i %s Instruction: %s",  socketID, message, instruction);
+}
+
+void Server::SendPacketAll(sf::Packet packet, int clientException = -1)
 {
 	for (int i = 0; i < _clients.size(); i++)
 	{
 		if (clientException == i) continue;
 
-		if (_clients[i]->GetTcpSocket()->send(packet) != sf::Socket::Done)
-		{
-			printf("Error: client %i could not send packet", i);
-		}
+		SendPacket(packet, _clients[i]->GetID());
+	}
+}
+
+void Server::SendPacket(sf::Packet packet, int id)
+{
+	if (_clients[id]->GetTcpSocket()->send(packet) != sf::Socket::Done)
+	{
+		printf("Error: could not send packet to client %i: %s", id, _clients[id]->GetName());
 	}
 }
