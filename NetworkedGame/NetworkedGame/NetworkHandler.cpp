@@ -122,7 +122,8 @@ void NetworkHandler::Send(sf::Packet p)
 	switch (status)
 	{
 	case sf::Socket::Done:
-		printf("Packet was successfully send via: %s", transport);
+		std::cout << "Packet was successfully send via udp" << std::endl;
+//		printf(, transport);
 		break;
 	case sf::Socket::Disconnected:
 		printf("Error: Packet sending was unsuccessful. Client was disconnected.");
