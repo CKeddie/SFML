@@ -6,7 +6,7 @@ Server * _server;
 
 int main()
 {
-	_server = new Server(45000);
+	_server = new Server(47000);
 	_server->Run();
 	return 0;
 }
