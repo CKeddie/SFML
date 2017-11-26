@@ -45,9 +45,17 @@ void Server::Run()
 						//receive packet
 						HandlePacket(packet, _clientCount);
 						//print client index and name
-						printf("Client[%i]: '%s' has connected.", _clientCount, _clients[_clientCount]->GetName());
+						printf("Client[%i]: '%s' has connected.\n"
+							, _clientCount, _clients[_clientCount]->GetName().c_str());
+						
 						//increment count
 						_clientCount++;
+
+						sf::Packet outPacket;
+						outPacket << static_cast<sf::Int32>(0);
+						outPacket << static_cast<sf::Int32>(NotifyClients);
+						outPacket << static_cast<sf::Int32>(_clientCount);
+						SendPacketAll(outPacket);
 					}					
 					break;
 				}
@@ -77,6 +85,7 @@ void Server::Recieve()
 			{
 				HandlePacket(received, i);
 			}
+			if(_clients[i]->UdpReceive())
 		}
 	}
 }
@@ -103,41 +112,50 @@ void Server::HandlePacket(sf::Packet incomingPacket, int socketID)
 			_clients[socketID]->SetName(name);
 
 			message = "(WelcomePack)";
-			outgoingPacket << (sf::Int8)RequestConnect;
-			outgoingPacket << socketID;
-			outgoingPacket << _clients.size();
+
+			outgoingPacket << static_cast<sf::Int32>(0);//transport tcp;
+			outgoingPacket << static_cast<sf::Int32>(RequestConnect); //type
+			outgoingPacket << static_cast<sf::Int32>(socketID); //client id
+			outgoingPacket << static_cast<sf::Int32>(_clients.size()); //num clients
 			SendPacket(outgoingPacket, socketID);
 			break;
 		}
 	case Server::NotifyDisconnect:
 		message = "(Disconnected)";
-		_clients.erase(_clients.begin() + socketID);
-		SendPacketAll(outgoingPacket, socketID);
+		_clients.erase(_clients.begin() + socketID);		
+		for (int i = 0; i < _clients.size(); i++)
+		{
+			if (socketID == i) continue;
+
+			SendPacket(incomingPacket, _clients[i]->GetID());
+		}
 		break;
 	case Server::RequestPlayers:
 		break;
 	case Server::NotifyClients:
-		SendPacketAll(outgoingPacket, socketID);
+	{
+		for (int i = 0; i < _clients.size(); i++)
+		{
+			if (socketID == i) continue;
+
+			SendPacket(incomingPacket, _clients[i]->GetID());
+		}
 		break;
+	}
 	}
 
 //	printf("Client: %i %s Instruction: %s",  socketID, message, instruction);
 }
 
-void Server::SendPacketAll(sf::Packet packet, int clientException = -1)
+void Server::SendPacketAll(sf::Packet packet, int clientException)
 {
-	for (int i = 0; i < _clients.size(); i++)
-	{
-		if (clientException == i) continue;
 
-		SendPacket(packet, _clients[i]->GetID());
-	}
 }
 
 void Server::SendPacket(sf::Packet packet, int id)
 {
 	if (_clients[id]->GetTcpSocket()->send(packet) != sf::Socket::Done)
 	{
-		printf("Error: could not send packet to client %i: %s", id, _clients[id]->GetName());
+		printf("Error: could not send packet to client %i: %s \n", id, _clients[id]->GetName());
 	}
 }

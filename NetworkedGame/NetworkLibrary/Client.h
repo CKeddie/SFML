@@ -1,8 +1,7 @@
 #pragma once
 #include "IObserver.h"
 #include <SFML/System/Vector2.hpp>
-#include <SFML/Network/TcpSocket.hpp>
-
+#include <SFML/Network.hpp>
 #include <string>
 #include <vector>
 #include <memory>
@@ -20,7 +19,8 @@ public:
 	std::string GetName() { return _name; }
 
 	sf::TcpSocket * GetTcpSocket() { return _tcp_socket; };
-
+	sf::UdpSocket * GetUdpSocket() { return _udp_socket; };
+	
 	void SetTimeout(sf::Time time) { _timeout = time; }
 	sf::Time GetTimeout() { return _timeout; }
 protected:
@@ -28,5 +28,6 @@ protected:
 	sf::Int32 _authority = 1;
 	std::string _name;
 	sf::TcpSocket * _tcp_socket;
+	sf::UdpSocket * _udp_socket;
 	sf::Time _timeout;
 };

@@ -9,7 +9,7 @@ class NetworkHandler
 	: public ArenaState
 	, public IObserver<sf::Packet>
 {
-private:
+public:
 	enum TransportType
 	{
 		TCP,
@@ -31,8 +31,6 @@ public:
 	void Send(sf::Packet p);
 	void Receive();
 	void OnNotify(sf::Packet) override;
-	void SortPacket(sf::Packet * inputPacket);
-	
 	void Update(float) override;
 	void Draw(sf::RenderWindow*) override;
 
@@ -48,5 +46,6 @@ private:
 	sf::UdpSocket * _socketUDP;
 	sf::IpAddress _address;
 	unsigned short _port;
+	sf::Thread _receiver;
 };
 

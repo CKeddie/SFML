@@ -22,7 +22,7 @@ ArenaState::ArenaState(Application & app)
 	debug_tileset = new Tileset(32, 32, AppRef.assetManager->GetTexture("TilemapDebug"));
 
 	//Initialize Entities//
-	sf::Sprite * catSprite = AppRef.assetManager->TextureToSprite("catFighter", 64, 64);
+	playerSprite = AppRef.assetManager->TextureToSprite("catFighter", 64, 64);
 
 	//Construct Map//(w, h, rw, rh)
 	world = new Map(32, 23, 32, 32);
@@ -45,10 +45,6 @@ ArenaState::ArenaState(Application & app)
 		"Default"
 		, 0
 		, *AppRef.inputHandler);
-}
-
-void ArenaState::SpawnLocalPlayer()
-{
 	_local_player->CreateEntity(playerSprite, *world, _spawn_points[0]);
 }
 
@@ -69,13 +65,12 @@ void ArenaState::Update(float dt)
 
 	if (AppRef.Paused()) return;
 
+	_local_player->Update(dt);
 	
 	for (auto & player : _players)
 		player.second->Update(dt);
 
 	world->Update(dt);	
-
-	AppRef.networkHandler->Receive();
 }
 
 void ArenaState::Draw(sf::RenderWindow * renderWindow)
@@ -84,32 +79,12 @@ void ArenaState::Draw(sf::RenderWindow * renderWindow)
 
 	world->Draw(renderWindow);
 
+	_local_player->Draw(renderWindow);
+
 	for (auto & player : _players)
 		player.second->Draw(renderWindow);
 
 	_control_manager->Draw(renderWindow);
 
 	renderWindow->display();
-}
-
-void ArenaState::OnNotify(sf::Packet* inputPacket)
-{
-	sf::Int32 playerID;
-	*inputPacket >> playerID;
-
-	if (!_players[playerID])
-	{
-		_players[playerID] = new Player("", playerID);
-		_players[playerID]->CreateEntity(
-			AppRef.assetManager->TextureToSprite("catFighter", 64, 64)
-			, *world
-			, _spawn_points[playerID]);
-	}
-
-	if (_players[playerID])
-	{
-		sf::Vector2f p;
-		*inputPacket >> p.x >> p.y;
-		_players[playerID]->GetEntity()->SetPosition(p);
-	}
 }

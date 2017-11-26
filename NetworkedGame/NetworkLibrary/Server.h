@@ -12,6 +12,11 @@
 class Server
 {
 private:	
+	enum TransportType
+	{
+		TCP,
+		UDP
+	};
 	enum InstructionSet
 	{
 		RequestConnect,
@@ -26,7 +31,7 @@ public:
 	void Run();
 	void Recieve();
 	void HandlePacket(sf::Packet incomingPacket, int socketID);
-	void SendPacketAll(sf::Packet packet, int clientException);
+	void SendPacketAll(sf::Packet packet, int clientException = -1);
 	void SendPacket(sf::Packet packet, int client);
 private:
 	bool _isRunning = true;

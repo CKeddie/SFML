@@ -11,7 +11,6 @@
 #include "Map.h"
 
 class Player
-	: public ISubject<sf::Packet>
 {
 protected:
 	enum AnimationState

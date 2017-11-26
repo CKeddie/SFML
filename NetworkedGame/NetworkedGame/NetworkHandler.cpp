@@ -1,15 +1,18 @@
 #include "NetworkHandler.h"
+#include "Application.h"
 
 NetworkHandler::NetworkHandler(std::string name, sf::IpAddress ip, unsigned short port, Application& application)
 	: ArenaState(application)
 	, IObserver<sf::Packet>()
+	, _receiver(&NetworkHandler::Receive, this)
 {
 	_name = name;
 	_address = ip;
 	_port = port;
 	_socketTCP = new sf::TcpSocket();
 	_socketUDP = new sf::UdpSocket();
-	_socketTCP->setBlocking(false);
+	//_receiver.launch();
+	_local_player->Attach(this);
 }
 
 void NetworkHandler::SpawnLocalPlayer()
@@ -26,6 +29,7 @@ void NetworkHandler::Connect()
 {
 	if (_connected) return;
 
+	_socketTCP->setBlocking(true);
 	//Connect to server
 	sf::Socket::Status status = _socketTCP->connect(_address, _port);
 
@@ -82,6 +86,7 @@ void NetworkHandler::Connect()
 
 void NetworkHandler::Disconnect()
 {
+	_socketTCP->setBlocking(true);
 	sf::Packet dcPacket;
 	dcPacket << static_cast<sf::Int32>(TCP);
 	dcPacket << static_cast<sf::Int32>(NotifyDisconnect);
@@ -131,49 +136,29 @@ void NetworkHandler::Send(sf::Packet p)
 
 void NetworkHandler::Receive()
 {
-	sf::Packet incoming;
-	sf::Socket::Status status = _socketTCP->receive(incoming);
+	if (!_connected) return;
+	sf::Packet inputPacket;
 
-	switch (status)
-	{
-	case sf::Socket::Done:
-		SortPacket(&incoming);
-		break;
-	case sf::Socket::Error:
-		break;
-	}
-}
+	_socketTCP->setBlocking(false);
+	sf::Socket::Status status = _socketTCP->receive(inputPacket);
 
-
-void NetworkHandler::OnNotify(sf::Packet packet)
-{
-	//Send(packet);
-}
-
-void NetworkHandler::SortPacket(sf::Packet * inputPacket)
-{
-	sf::Int32 transportProtocol;
-	
 	//unpack instruction
-	*inputPacket >> transportProtocol;
+	
+	sf::Int32 transport;
+	inputPacket >> transport;
+	sf::Int32 type;
+	inputPacket >> type;
 
-	sf::Int32 instructionProtocol;
-	*inputPacket >> instructionProtocol;
-
-	InstructionSet instruction = InstructionSet::NotifyDisconnect;
-	instruction = (InstructionSet)instruction;
-
-
-	switch (instruction)
+	switch ((TransportType)type)
 	{
 	case NetworkHandler::RequestConnect:
 	{
 		//incoming packet should contain
 		//unpack client id
-		*inputPacket >> _clientID;
-
+		inputPacket >> _clientID;
+		_local_player->SetID(_clientID);
 		//unpack number of connections
-		*inputPacket >> _num_connections;
+		inputPacket >> _num_connections;
 
 		sf::Packet out;
 		//pack transport
@@ -181,7 +166,7 @@ void NetworkHandler::SortPacket(sf::Packet * inputPacket)
 
 		//pack instruction 4 (Request Update)
 		out << sf::Int32(RequestPlayers);
-		
+
 		Send(out);
 		break;
 	}
@@ -197,29 +182,31 @@ void NetworkHandler::SortPacket(sf::Packet * inputPacket)
 		break;
 	}
 	case NetworkHandler::NotifyClients:
+	{
 		//unpack id
 		sf::Int32 clientID;
-		*inputPacket >> clientID;
-		sf::String clientName;
-		*inputPacket >> clientName;
-		
+		inputPacket >> clientID;
+
 		//if client does not exist
 		if (!_players[clientID])
 		{
 			//map id and create new player
-			_players[clientID] = new Player(clientName, clientID);
+			_players[clientID] = new Player("Player", clientID);
 			_players[clientID]->CreateEntity(playerSprite, *world, _spawn_points[clientID]);
 		}
 
-		//get the entity
-		Entity * e = _players[clientID]->GetEntity();
-
 		//set position
-		sf::Vector2f p;
-		*inputPacket >> p.x >> p.y;
-		e->SetPosition(p);		
+		sf::Vector2f position;
+		inputPacket >> position.x >> position.y;
+		_players[clientID]->GetEntity()->SetPosition(position);
 		break;
 	}
+	}
+}
+
+void NetworkHandler::OnNotify(sf::Packet packet)
+{
+	Send(packet);
 }
 
 void NetworkHandler::Update(float deltaTime)
@@ -232,6 +219,8 @@ void NetworkHandler::Update(float deltaTime)
 	//Connect LAN
 	if (AppRef.inputHandler->IsKeyPressed(sf::Keyboard::Key::Delete))
 		Disconnect();
+
+	Receive();
 }
 
 void NetworkHandler::Draw(sf::RenderWindow * renderWindow)

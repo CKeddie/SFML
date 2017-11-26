@@ -1,6 +1,6 @@
 #include "LocalPlayer.h"
 #include "InputHandler.h"
-
+#include "NetworkHandler.h"
 
 LocalPlayer::LocalPlayer(std::string name, int id, InputHandler & inputHandler)
 	: Player(name, id)
@@ -17,7 +17,6 @@ LocalPlayer::~LocalPlayer()
 void LocalPlayer::Update(float dt)
 {
 	Player::Update(dt);
-	sf::Packet p;
 
 	if (_body->IsGrounded())
 		_jump_charges = _max_jump_charges;
@@ -50,12 +49,19 @@ void LocalPlayer::Update(float dt)
 				--_jump_charges;
 			}
 		}
-
-		sf::Packet p;
-		p << _player_id;
-		p << _body->GetVelocity().x;
-		p << _body->GetVelocity().y;		
-		Notify(p);
+		_packet_timer += dt;
+		if (_packet_timer > 1)
+		{
+			_packet_timer = 0.0f;
+			sf::Packet p;
+			p << static_cast<sf::Int32>(NetworkHandler::UDP);
+			p << static_cast<sf::Int32>(NetworkHandler::NotifyClients);
+			p << static_cast<sf::Int32>(_player_id);
+			sf::Vector2f position = _entity->Position();
+			p << (std::roundf(position.x));
+			p << (std::roundf(position.y));
+			Notify(p);
+		}
 	}
 }
 
@@ -64,7 +70,3 @@ void LocalPlayer::Draw(sf::RenderWindow * renderWindow)
 	Player::Draw(renderWindow);
 }
 
-void LocalPlayer::OnNotify(sf::Packet packet)
-{//unpack updated player values
-
-}
