@@ -1,6 +1,6 @@
 #include "Application.h"
 #include "ArenaState.h"
-
+#include "NetworkHandler.h"
 
 Application::Application(std::string title, std::string clientName, float width, float height, float offsetX, float offsetY)
 {
@@ -13,7 +13,7 @@ Application::Application(std::string title, std::string clientName, float width,
 	assetManager = new AssetManager("../Assets");
 	inputHandler = new InputHandler();
 	gamestateManager = new GameStateManager();
-	gamestateManager->PushState(new NetworkHandler(clientName, "localhost", 45000, *this));
+	gamestateManager->PushState(new NetworkHandler(clientName, sf::IpAddress::getLocalAddress(), 47000, *this));
 }
 
 Application::~Application()
