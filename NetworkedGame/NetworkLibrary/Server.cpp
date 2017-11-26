@@ -85,7 +85,11 @@ void Server::Recieve()
 			{
 				HandlePacket(received, i);
 			}
-			//if(_clients[i]->UdpReceive())
+			sf::IpAddress addr = _clients[i]->GetAddress();
+			if(_clients[i]->GetUdpSocket()->receive(received, addr, _port) == sf::Socket::Done)
+			{
+				HandlePacket(received, i);			
+			}
 		}
 	}
 }
