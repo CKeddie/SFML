@@ -13,7 +13,7 @@ Application::Application(std::string title, std::string clientName, float width,
 	assetManager = new AssetManager("../Assets");
 	inputHandler = new InputHandler();
 	gamestateManager = new GameStateManager();
-	gamestateManager->PushState(new NetworkHandler(clientName, "192.168.0.23", 47000, *this));
+	gamestateManager->PushState(new NetworkHandler(clientName, sf::IpAddress::Broadcast, 47000, *this));
 }
 
 Application::~Application()

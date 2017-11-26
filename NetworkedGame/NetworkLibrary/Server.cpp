@@ -55,7 +55,8 @@ void Server::Run()
 						outPacket << static_cast<sf::Int32>(0);
 						outPacket << static_cast<sf::Int32>(NotifyClients);
 						outPacket << static_cast<sf::Int32>(_clientCount);
-						SendPacketAll(outPacket);
+						for(int i = 0; i < _clientCount; i++)
+							SendPacket(outPacket, i);
 					}					
 					break;
 				}
@@ -117,7 +118,7 @@ void Server::HandlePacket(sf::Packet incomingPacket, int socketID)
 
 			message = "(WelcomePack)";
 
-			outgoingPacket << static_cast<sf::Int32>(0);//transport tcp;
+			outgoingPacket << static_cast<sf::Int32>(TCP);//transport tcp;
 			outgoingPacket << static_cast<sf::Int32>(RequestConnect); //type
 			outgoingPacket << static_cast<sf::Int32>(socketID); //client id
 			outgoingPacket << static_cast<sf::Int32>(_clients.size()); //num clients
@@ -158,8 +159,26 @@ void Server::SendPacketAll(sf::Packet packet, int clientException)
 
 void Server::SendPacket(sf::Packet packet, int id)
 {
-	if (_clients[id]->GetTcpSocket()->send(packet) != sf::Socket::Done)
+	sf::Int32 type;
+	packet >> type;
+	switch ((TransportType)type)
 	{
-		printf("Error: could not send packet to client %i: %s \n", id, _clients[id]->GetName());
+	case UDP:
+	{
+		sf::IpAddress addr = _clients[id]->GetAddress();
+		if (_clients[id]->GetUdpSocket()->send(packet, addr, _port) != sf::Socket::Done)
+		{
+			printf("Error: could not send packet to client %i: %s \n", id, _clients[id]->GetName());
+		}
+		break;}
+	case TCP:
+	{
+		if (_clients[id]->GetTcpSocket()->send(packet) != sf::Socket::Done)
+		{
+			printf("Error: could not send packet to client %i: %s \n", id, _clients[id]->GetName());
+		}
+		break;
+	
+	}
 	}
 }
