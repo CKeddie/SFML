@@ -1,14 +1,13 @@
 #pragma once
 
 #include "IObserver.h"
-#include "ISubject.h"
 #include "SFML\Network.hpp"
-#include "Player.h"
+#include "ArenaState.h"
 #include <map>
 
-class NetworkHandler
-	: public IObserver<sf::Packet>
-	, public ISubject<int>
+class NetworkHandler 
+	: public ArenaState
+	, public IObserver<sf::Packet>
 {
 private:
 	enum TransportType
@@ -18,25 +17,29 @@ private:
 	};
 	enum InstructionSet
 	{
-		OnConnect,
-		OnDisconnect,
-		OnUpdatePlayers,
-		OnCreatePlayers,
+		RequestConnect,
+		NotifyDisconnect,
+		RequestPlayers,
+		NotifyClients,
 	};
 public:
-	NetworkHandler(std::string name, sf::IpAddress ip, unsigned short port);
+	NetworkHandler(std::string name, sf::IpAddress ip, unsigned short port, Application & application);
+	void SpawnLocalPlayer();
 	~NetworkHandler();
 	void Connect();
 	void Disconnect();
 	void Send(sf::Packet p);
 	void Receive();
 	void OnNotify(sf::Packet) override;
+	void SortPacket(sf::Packet * inputPacket);
 	
+	void Update(float) override;
+	void Draw(sf::RenderWindow*) override;
+
 	std::string GetName() { return _name; }
 	int GetID() { return _clientID; }
 
 private:
-	void SortPacket(sf::Packet packet);
 	bool _connected = false;
 	std::string _name;
 	sf::Int32 _clientID = 0;

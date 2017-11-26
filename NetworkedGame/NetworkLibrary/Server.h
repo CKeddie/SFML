@@ -11,13 +11,13 @@
 
 class Server
 {
-private:
+private:	
 	enum InstructionSet
 	{
-		OnConnect,
-		OnDisconnect,
-		OnUpdatePlayers,
-		OnCreatePlayers,
+		RequestConnect,
+		NotifyDisconnect,
+		RequestPlayers,
+		NotifyClients,
 	};
 public:
 	Server(unsigned short port = 45000);

@@ -10,6 +10,7 @@ class InputHandler;
 
 class LocalPlayer
 	: public Player
+	, public IObserver<sf::Packet>
 {
 public:
 	LocalPlayer(std::string name, int id, InputHandler & inputHandler);
@@ -17,6 +18,7 @@ public:
 
 	void Update(float) override;
 	void Draw(sf::RenderWindow*) override;
+	void OnNotify(sf::Packet)override;
 private:
 	InputHandler & _input_handler;
 	int _jump_charges = 0;

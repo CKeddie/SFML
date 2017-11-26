@@ -12,9 +12,8 @@ Application::Application(std::string title, std::string clientName, float width,
 	_render_window = new sf::RenderWindow(sf::VideoMode(width, height), title);
 	assetManager = new AssetManager("../Assets");
 	inputHandler = new InputHandler();
-	networkHandler = new NetworkHandler(clientName, "localhost", 45000);
 	gamestateManager = new GameStateManager();
-	gamestateManager->PushState(new ArenaState(*this));
+	gamestateManager->PushState(new NetworkHandler(clientName, "localhost", 45000, *this));
 }
 
 Application::~Application()

@@ -63,3 +63,8 @@ void LocalPlayer::Draw(sf::RenderWindow * renderWindow)
 {
 	Player::Draw(renderWindow);
 }
+
+void LocalPlayer::OnNotify(sf::Packet packet)
+{//unpack updated player values
+
+}

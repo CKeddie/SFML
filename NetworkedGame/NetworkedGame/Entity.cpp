@@ -48,9 +48,3 @@ void Entity::AddComponent(Component * component)
 {
 	_components[&typeid(*component)] = component;
 }
-
-//IEntityData::IEntityData(Entity & entity)
-//	: _entity(entity)
-//{
-//
-//}

@@ -38,10 +38,15 @@ void Server::Run()
 					sf::Packet packet;
 					if (socket->receive(packet) == sf::Socket::Done)
 					{
+						//add new client
 						_clients.push_back(new Client(socket, _clientCount));
+						//add client to selector
 						_selector.add(*_clients.back()->GetTcpSocket());
+						//receive packet
 						HandlePacket(packet, _clientCount);
+						//print client index and name
 						printf("Client[%i]: '%s' has connected.", _clientCount, _clients[_clientCount]->GetName());
+						//increment count
 						_clientCount++;
 					}					
 					break;
@@ -91,32 +96,32 @@ void Server::HandlePacket(sf::Packet incomingPacket, int socketID)
 
 	switch (instruction)
 	{
-		case Server::OnConnect:
+		case Server::RequestConnect:
 		{
 			sf::String name;
 			incomingPacket >> name;
 			_clients[socketID]->SetName(name);
 
 			message = "(WelcomePack)";
-			outgoingPacket << (sf::Int8)OnConnect;
+			outgoingPacket << (sf::Int8)RequestConnect;
 			outgoingPacket << socketID;
 			outgoingPacket << _clients.size();
 			SendPacket(outgoingPacket, socketID);
 			break;
 		}
-	case Server::OnDisconnect:
+	case Server::NotifyDisconnect:
 		message = "(Disconnected)";
 		_clients.erase(_clients.begin() + socketID);
 		SendPacketAll(outgoingPacket, socketID);
 		break;
-	case Server::OnUpdatePlayers:
+	case Server::RequestPlayers:
 		break;
-	case Server::OnCreatePlayers:
+	case Server::NotifyClients:
 		SendPacketAll(outgoingPacket, socketID);
 		break;
 	}
 
-	printf("Client: %i %s Instruction: %s",  socketID, message, instruction);
+//	printf("Client: %i %s Instruction: %s",  socketID, message, instruction);
 }
 
 void Server::SendPacketAll(sf::Packet packet, int clientException = -1)

@@ -1,14 +1,20 @@
 #include "NetworkHandler.h"
 
-NetworkHandler::NetworkHandler(std::string name, sf::IpAddress ip, unsigned short port)
-	: IObserver<sf::Packet>()
-	, ISubject<int>()
+NetworkHandler::NetworkHandler(std::string name, sf::IpAddress ip, unsigned short port, Application& application)
+	: ArenaState(application)
+	, IObserver<sf::Packet>()
 {
 	_name = name;
 	_address = ip;
 	_port = port;
 	_socketTCP = new sf::TcpSocket();
 	_socketUDP = new sf::UdpSocket();
+	_socketTCP->setBlocking(false);
+}
+
+void NetworkHandler::SpawnLocalPlayer()
+{
+	_players[GetID()]->CreateEntity(playerSprite, *world, sf::Vector2f(2 * 32, 18 * 32));
 }
 
 
@@ -35,7 +41,7 @@ void NetworkHandler::Connect()
 		sf::String name = _name;
 
 		request << static_cast<sf::Int32>(TCP);
-		request << static_cast<sf::Int32>(OnConnect);
+		request << static_cast<sf::Int32>(RequestConnect);
 		request << static_cast<sf::String>(name);
 		
 		//Send data request
@@ -77,10 +83,10 @@ void NetworkHandler::Connect()
 void NetworkHandler::Disconnect()
 {
 	sf::Packet dcPacket;
-	dcPacket << (int)OnDisconnect;
+	dcPacket << static_cast<sf::Int32>(TCP);
+	dcPacket << static_cast<sf::Int32>(NotifyDisconnect);
 	dcPacket << _clientID;
 	Send(dcPacket);
-	Receive();
 	_socketTCP->disconnect();
 	_socketUDP->unbind();
 	_connected = false;
@@ -131,7 +137,7 @@ void NetworkHandler::Receive()
 	switch (status)
 	{
 	case sf::Socket::Done:
-		SortPacket(incoming);
+		SortPacket(&incoming);
 		break;
 	case sf::Socket::Error:
 		break;
@@ -144,49 +150,91 @@ void NetworkHandler::OnNotify(sf::Packet packet)
 	//Send(packet);
 }
 
-void NetworkHandler::SortPacket(sf::Packet packet)
+void NetworkHandler::SortPacket(sf::Packet * inputPacket)
 {
-	int id;
+	sf::Int32 transportProtocol;
+	
 	//unpack instruction
-	packet >> id;
-	InstructionSet instruction;
-	instruction = (InstructionSet)id;
+	*inputPacket >> transportProtocol;
+
+	sf::Int32 instructionProtocol;
+	*inputPacket >> instructionProtocol;
+
+	InstructionSet instruction = InstructionSet::NotifyDisconnect;
+	instruction = (InstructionSet)instruction;
+
 
 	switch (instruction)
 	{
-	case NetworkHandler::OnConnect:
+	case NetworkHandler::RequestConnect:
 	{
 		//incoming packet should contain
 		//unpack client id
-		packet >> _clientID;
+		*inputPacket >> _clientID;
 
 		//unpack number of connections
-		packet >> _num_connections;
+		*inputPacket >> _num_connections;
 
 		sf::Packet out;
 		//pack transport
-		out << (int)TCP;
+		out << sf::Int32(TCP);
+
 		//pack instruction 4 (Request Update)
-		int i = (int)OnUpdatePlayers;
-		out << i;
+		out << sf::Int32(RequestPlayers);
+		
 		Send(out);
 		break;
 	}
-	case NetworkHandler::OnDisconnect:
-		//safe to disconnect
-		break;
-	case NetworkHandler::OnUpdatePlayers:
-		Notify(1);
+	//receive players
+	case NetworkHandler::RequestPlayers:
+	{
+		//get player count
+		//send request
 		//get player id
 		//get position/velocity
 		//get player in game
 		//set position/velocity
 		break;
-	case NetworkHandler::OnCreatePlayers:
+	}
+	case NetworkHandler::NotifyClients:
 		//unpack id
-		//map id and create new player
-		//create player entity
-		Notify(0);
+		sf::Int32 clientID;
+		*inputPacket >> clientID;
+		sf::String clientName;
+		*inputPacket >> clientName;
+		
+		//if client does not exist
+		if (!_players[clientID])
+		{
+			//map id and create new player
+			_players[clientID] = new Player(clientName, clientID);
+			_players[clientID]->CreateEntity(playerSprite, *world, _spawn_points[clientID]);
+		}
+
+		//get the entity
+		Entity * e = _players[clientID]->GetEntity();
+
+		//set position
+		sf::Vector2f p;
+		*inputPacket >> p.x >> p.y;
+		e->SetPosition(p);		
 		break;
 	}
+}
+
+void NetworkHandler::Update(float deltaTime)
+{
+	ArenaState::Update(deltaTime);
+
+	//Connect LAN
+	if (AppRef.inputHandler->IsKeyPressed(sf::Keyboard::Key::Insert))
+		Connect();
+	//Connect LAN
+	if (AppRef.inputHandler->IsKeyPressed(sf::Keyboard::Key::Delete))
+		Disconnect();
+}
+
+void NetworkHandler::Draw(sf::RenderWindow * renderWindow)
+{
+	ArenaState::Draw(renderWindow);
 }
