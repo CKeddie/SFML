@@ -7,15 +7,12 @@
 #include "Map.h"
 #include "LocalPlayer.h"
 
-#include "ISubject.h"
-
 class ArenaState
 	: public GameState
 	, public IObserver<sf::Packet*>
 {
 public:
 	ArenaState(Application & app);
-	void SpawnLocalPlayer();
 	~ArenaState();
 	void Update(float) override;
 	void Draw(sf::RenderWindow*) override;

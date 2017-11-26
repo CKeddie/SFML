@@ -85,7 +85,7 @@ void Server::Recieve()
 			{
 				HandlePacket(received, i);
 			}
-			if(_clients[i]->UdpReceive())
+			//if(_clients[i]->UdpReceive())
 		}
 	}
 }

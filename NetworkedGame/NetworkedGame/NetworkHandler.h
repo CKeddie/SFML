@@ -30,7 +30,7 @@ public:
 	void Disconnect();
 	void Send(sf::Packet p);
 	void Receive();
-	void OnNotify(sf::Packet) override;
+	void OnNotify(sf::Packet packet) override;
 	void Update(float) override;
 	void Draw(sf::RenderWindow*) override;
 
@@ -46,6 +46,6 @@ private:
 	sf::UdpSocket * _socketUDP;
 	sf::IpAddress _address;
 	unsigned short _port;
-	sf::Thread _receiver;
+	//sf::Thread _receiver;
 };
 

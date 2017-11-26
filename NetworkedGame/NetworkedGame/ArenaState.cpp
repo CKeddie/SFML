@@ -88,3 +88,7 @@ void ArenaState::Draw(sf::RenderWindow * renderWindow)
 
 	renderWindow->display();
 }
+
+void ArenaState::OnNotify(sf::Packet *)
+{
+}

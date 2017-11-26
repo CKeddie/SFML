@@ -4,7 +4,7 @@
 NetworkHandler::NetworkHandler(std::string name, sf::IpAddress ip, unsigned short port, Application& application)
 	: ArenaState(application)
 	, IObserver<sf::Packet>()
-	, _receiver(&NetworkHandler::Receive, this)
+	//, _receiver(&NetworkHandler::Receive, this)
 {
 	_name = name;
 	_address = ip;
