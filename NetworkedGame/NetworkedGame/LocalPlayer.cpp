@@ -49,8 +49,8 @@ void LocalPlayer::Update(float dt)
 				--_jump_charges;
 			}
 		}
-		_packet_timer += dt;
-		if (_packet_timer > 1)
+		//_packet_timer += dt;
+		//if (_packet_timer > 1/60)
 		{
 			_packet_timer = 0.0f;
 			sf::Packet p;
