@@ -49,12 +49,12 @@ void LocalPlayer::Update(float dt)
 				--_jump_charges;
 			}
 		}
-		//_packet_timer += dt;
-		//if (_packet_timer > 1/60)
+		_packet_timer += dt;
+		if (_packet_timer > 1/100)
 		{
 			_packet_timer = 0.0f;
 			sf::Packet p;
-			p << static_cast<sf::Int32>(NetworkHandler::TCP);
+			p << static_cast<sf::Int32>(NetworkHandler::UDP);
 			p << static_cast<sf::Int32>(NetworkHandler::NotifyClients);
 			p << static_cast<sf::Int32>(_player_id);
 			sf::Vector2f position = _entity->Position();

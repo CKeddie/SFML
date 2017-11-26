@@ -20,6 +20,8 @@ public:
 
 	sf::TcpSocket * GetTcpSocket() { return _tcp_socket; };
 	sf::UdpSocket * GetUdpSocket() { return _udp_socket; };
+
+	sf::IpAddress GetAddress() { return _tcp_socket->getRemoteAddress(); }
 	
 	void SetTimeout(sf::Time time) { _timeout = time; }
 	sf::Time GetTimeout() { return _timeout; }
